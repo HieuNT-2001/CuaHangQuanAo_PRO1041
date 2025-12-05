@@ -1,7 +1,6 @@
 
 import handlers.GlobalLogHandler;
 import javax.swing.SwingUtilities;
-import services.LogService;
 import view.DangNhapJFrame;
 
 /*

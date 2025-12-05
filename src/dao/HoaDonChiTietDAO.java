@@ -6,7 +6,6 @@ package dao;
 
 import entity.HoaDonChiTiet;
 import utils.Xjdbc;
-import utils.*;
 import java.util.*;
 import java.sql.*;
 
