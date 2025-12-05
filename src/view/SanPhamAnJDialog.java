@@ -8,6 +8,7 @@ import dao.DanhMucDAO;
 import dao.NhaCungCapDAO;
 import dao.SanPhamDAO;
 import entity.SanPham;
+import handlers.GlobalLogHandler;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -175,6 +176,8 @@ public class SanPhamAnJDialog extends javax.swing.JDialog {
         }
         //</editor-fold>
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

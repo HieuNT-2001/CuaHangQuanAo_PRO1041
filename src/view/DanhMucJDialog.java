@@ -6,6 +6,7 @@ package view;
 
 import dao.DanhMucDAO;
 import entity.DanhMuc;
+import handlers.GlobalLogHandler;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import utils.MsgBox;
@@ -257,6 +258,8 @@ public class DanhMucJDialog extends javax.swing.JDialog {
         }
         //</editor-fold>
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

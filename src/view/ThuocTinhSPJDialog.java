@@ -8,6 +8,7 @@ import dao.KichThuocDAO;
 import dao.MauSacDAO;
 import entity.KichThuoc;
 import entity.MauSac;
+import handlers.GlobalLogHandler;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import utils.MsgBox;
@@ -325,6 +326,8 @@ public class ThuocTinhSPJDialog extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(ThuocTinhSPJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -6,6 +6,7 @@ package view;
 
 import dao.*;
 import entity.*;
+import handlers.GlobalLogHandler;
 import java.util.*;
 import javax.swing.table.DefaultTableModel;
 import utils.*;
@@ -144,6 +145,8 @@ public class HoaDonChiTietJDialog extends javax.swing.JDialog {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -10,6 +10,7 @@ import dao.MauSacDAO;
 import entity.ChiTietSP;
 import entity.KichThuoc;
 import entity.MauSac;
+import handlers.GlobalLogHandler;
 import java.io.File;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -365,6 +366,8 @@ public class ChiTietSPJDialog extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(ChiTietSPJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

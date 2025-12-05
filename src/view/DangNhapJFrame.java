@@ -6,6 +6,7 @@ package view;
 
 import entity.NhanVien;
 import dao.NhanVienDAO;
+import handlers.GlobalLogHandler;
 import utils.Auth;
 import utils.MsgBox;
 
@@ -202,6 +203,8 @@ public class DangNhapJFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(DangNhapJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

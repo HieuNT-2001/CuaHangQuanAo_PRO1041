@@ -4,6 +4,7 @@
  */
 package view;
 
+import handlers.GlobalLogHandler;
 import javax.swing.JPanel;
 import utils.Auth;
 import utils.MsgBox;
@@ -319,6 +320,8 @@ public class HomeJFrame extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+
+        GlobalLogHandler.init();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
