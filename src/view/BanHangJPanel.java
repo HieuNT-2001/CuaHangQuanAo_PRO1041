@@ -203,8 +203,6 @@ public class BanHangJPanel extends javax.swing.JPanel {
         hd.setLyDo(args);
         hdDAO.update(hd);
 
-        hd.setTrangThai(status);
-
         if (status == 1) {
             MsgBox.alert(this, "Thanh toán thành công!");
 
@@ -238,8 +236,6 @@ public class BanHangJPanel extends javax.swing.JPanel {
                 }
             }
 
-            hdDAO.update(hd);
-
             if (!alerts.isEmpty()) {
                 LowStockAlertDialog dialog = new LowStockAlertDialog(null, alerts);
                 dialog.setVisible(true);
@@ -247,6 +243,9 @@ public class BanHangJPanel extends javax.swing.JPanel {
         } else if (status == 2) {
             MsgBox.alert(this, "Hủy hóa đơn thành công!");
         }
+
+        hd.setTrangThai(status);
+        hdDAO.update(hd);
     }
 
     // Cập nhật lại thành tiền khi thêm hoặc xóa sản phẩm vào giỏ hàng
