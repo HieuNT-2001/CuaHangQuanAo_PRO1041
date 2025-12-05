@@ -10,6 +10,10 @@ import entity.*;
 import dao.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
+import services.ActivityLogService;
+import services.InventoryChangeService;
+import utils.Auth;
+import utils.LocalIP;
 import utils.MsgBox;
 
 /**
@@ -22,6 +26,9 @@ public class SanPhamJPanel extends javax.swing.JPanel {
     SanPhamDAO spd = new SanPhamDAO();
     NhaCungCapDAO nccDAO = new NhaCungCapDAO();
     DanhMucDAO dmDAO = new DanhMucDAO();
+    private final ActivityLogService activityLog = new ActivityLogService();
+    private final InventoryChangeService inventory = new InventoryChangeService();
+    private final String username = Auth.user.getTenDangNhap();
 
     /**
      * Creates new form PanelSP
@@ -113,6 +120,20 @@ public class SanPhamJPanel extends javax.swing.JPanel {
                 clear();
                 this.index = -1;
                 MsgBox.alert(this, "Thêm sản phẩm thành công");
+
+                // Ghi thay doi kho hang nhap san pham moi
+                inventory.logChange(
+                        sp.getMaSP(),
+                        sp.getTenSP(),
+                        sp.getSoLuong(),
+                        0,
+                        sp.getSoLuong(),
+                        "Nhập hàng sp mới " + sp.getTenSP(),
+                        username
+                );
+
+                // Ghi lai log activity
+                activityLog.writeActivity(username, "nhap hang", true, LocalIP.getLocalIP(), "Nhap kho san pham moi");
             } catch (Exception e) {
                 MsgBox.alert(this, "Thêm sản phẩm thất bại");
             }
@@ -122,12 +143,28 @@ public class SanPhamJPanel extends javax.swing.JPanel {
     private void update() {
         if (MsgBox.confirm(this, "Bạn thật sự muốn sửa sản phẩm này ") && isValidate()) {
             SanPham sp = getModel();
+            int oldStock = spd.selectById(sp.getMaSP()).getSoLuong();
+            int newStock = sp.getSoLuong();
             try {
                 spd.update(sp);
                 fillTable();
                 clear();
                 this.index = -1;
                 MsgBox.alert(this, "Sửa thành công");
+
+                // Ghi thay doi dieu chinh ton kho
+                inventory.logChange(
+                        sp.getMaSP(),
+                        sp.getTenSP(),
+                        newStock - oldStock,
+                        oldStock,
+                        newStock,
+                        "Điều chính tổn kho sp " + sp.getTenSP(),
+                        username
+                );
+
+                // Ghi lai log activity
+                activityLog.writeActivity(username, "dieu chinh ton kho", true, LocalIP.getLocalIP(), "dieu chinh ton kho");
             } catch (Exception e) {
                 MsgBox.alert(this, "Sửa thất bại");
             }
@@ -148,7 +185,7 @@ public class SanPhamJPanel extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void anSanPham(int index) {
         int maSP = (int) tbSP.getValueAt(index, 0);
         SanPham sp = spd.selectById(maSP);
@@ -501,11 +538,11 @@ public class SanPhamJPanel extends javax.swing.JPanel {
     private void tbSPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbSPMouseClicked
         // TODO add your handling code here:
         this.index = tbSP.getSelectedRow();
-        
+
         if (this.index >= 0) {
             edit();
         }
-        
+
         // Nếu click đúp vào sản phẩm thì hiển thị chi tiết sản phẩm
         if (evt.getClickCount() == 2 && this.index >= 0) {
             int maSP = (int) tbSP.getValueAt(this.index, 0);
@@ -570,4 +607,3 @@ public class SanPhamJPanel extends javax.swing.JPanel {
     private javax.swing.JTable tbSP;
     // End of variables declaration//GEN-END:variables
 }
-

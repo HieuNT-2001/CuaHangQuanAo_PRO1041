@@ -8,6 +8,8 @@ import entity.NhanVien;
 import utils.Auth;
 import utils.MsgBox;
 import dao.NhanVienDAO;
+import services.ActivityLogService;
+import utils.LocalIP;
 
 /**
  *
@@ -15,6 +17,8 @@ import dao.NhanVienDAO;
  */
 public class DoiMatKhauJPanel extends javax.swing.JPanel {
     NhanVienDAO nvDAO = new NhanVienDAO();
+    private final ActivityLogService activityLog = new ActivityLogService();
+    private final String username = Auth.user.getTenDangNhap();
     /**
      * Creates new form DoiMatKhauJPanel
      */
@@ -45,10 +49,12 @@ public class DoiMatKhauJPanel extends javax.swing.JPanel {
         
         nv.setMatKhau(matKhauMoi);
         nvDAO.update(nv);
+        activityLog.writeActivity(username, "change password", true, LocalIP.getLocalIP(), "change password sucess");
         MsgBox.alert(this, "Doi mat khau thanh cong!");
     }
     
     public void huyBo() {
+        activityLog.writeActivity(username, "change password", true, LocalIP.getLocalIP(), "change password cancel");
         txtMatKhauCu.setText("");
         txtMatKhauMoi.setText("");
         txtXacNhanMK.setText("");

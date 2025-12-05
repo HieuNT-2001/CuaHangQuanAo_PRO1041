@@ -12,15 +12,22 @@ import dao.NhaCungCapDAO;
 import dao.SanPhamDAO;
 import entity.HoaDon;
 import entity.HoaDonChiTiet;
+import entity.InventoryAlert;
 import entity.KhuyenMai;
 import entity.SanPham;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import services.ActivityLogService;
+import services.InventoryAlertService;
+import services.InventoryChangeService;
 import utils.Auth;
+import utils.LocalIP;
 import utils.MsgBox;
 import utils.XDate;
 
@@ -36,6 +43,10 @@ public class BanHangJPanel extends javax.swing.JPanel {
     HoaDonDAO hdDAO = new HoaDonDAO();
     HoaDonChiTietDAO hdctDAO = new HoaDonChiTietDAO();
     KhuyenMaiDAO kmDAO = new KhuyenMaiDAO();
+    private final ActivityLogService activityLog = new ActivityLogService();
+    private final InventoryChangeService inventoryChangeService = new InventoryChangeService();
+    private final InventoryAlertService inventoryAlertService = new InventoryAlertService();
+    private final String username = Auth.user.getTenDangNhap();
 
     /**
      * Creates new form BanHangJPanel
@@ -106,6 +117,7 @@ public class BanHangJPanel extends javax.swing.JPanel {
         HoaDon hd = getForm(false);
         hdDAO.insert(hd);
         fillTableDanhSachHD();
+        activityLog.writeActivity(username, "tao hoa don", true, LocalIP.getLocalIP(), "tao hoa don");
     }
 
     // tạo một hóa đơn với kênh bán hàng online
@@ -113,6 +125,7 @@ public class BanHangJPanel extends javax.swing.JPanel {
         HoaDon hd = getForm(true);
         hdDAO.insert(hd);
         fillTableDanhSachHD();
+        activityLog.writeActivity(username, "dat hang", true, LocalIP.getLocalIP(), "dat hang online");
     }
 
     // Thêm sản phẩm vào giở hàng
@@ -189,10 +202,48 @@ public class BanHangJPanel extends javax.swing.JPanel {
         hd.setHt_thanhToan(ht_thanhToan);
         hd.setTrangThai(status);
         hd.setLyDo(args);
-        hdDAO.update(hd);
 
         if (status == 1) {
             MsgBox.alert(this, "Thanh toán thành công!");
+
+            List<InventoryAlert> alerts = new ArrayList<>();
+            for (HoaDonChiTiet hdct : hdctDAO.selectByMaHD(maHD)) {
+                SanPham sp = spDAO.selectById(hdct.getMaSP());
+                int oldStock = sp.getSoLuong();
+                int quantitySold = hdct.getSoLuong();
+                int newStock = oldStock - quantitySold;
+
+                // Ghi vào MongoDB
+                inventoryChangeService.logChange(
+                        sp.getMaSP(),
+                        sp.getTenSP(),
+                        -quantitySold,
+                        oldStock,
+                        newStock,
+                        "Bán hàng (HĐ #" + hd.getMaHD() + ")",
+                        username
+                );
+
+                // KIỂM TRA CẢNH BÁO STOCK THẤP
+                if (newStock < 10) {
+                    InventoryAlert alert = new InventoryAlert(
+                            sp.getMaSP(),
+                            sp.getTenSP(),
+                            newStock,
+                            "Hàng tồn kho thấp",
+                            LocalDateTime.now()
+                    );
+                    alerts.add(alert);
+                    inventoryAlertService.logInventoryAlert(alert);
+                }
+            }
+
+            hdDAO.update(hd);
+
+            if (!alerts.isEmpty()) {
+                LowStockAlertDialog dialog = new LowStockAlertDialog(null, alerts);
+                dialog.setVisible(true);
+            }
         } else if (status == 2) {
             MsgBox.alert(this, "Hủy hóa đơn thành công!");
         }
@@ -783,6 +834,8 @@ public class BanHangJPanel extends javax.swing.JPanel {
             fillTableDanhSachSP();
             clearGioHang();
             clearForm();
+
+            activityLog.writeActivity(username, "thanh toan", true, LocalIP.getLocalIP(), "thanh toan thanh cong");
         }
     }//GEN-LAST:event_btnThanhToanActionPerformed
 
@@ -797,6 +850,7 @@ public class BanHangJPanel extends javax.swing.JPanel {
                 fillTableDanhSachSP();
                 clearGioHang();
                 clearForm();
+                activityLog.writeActivity(username, "huy hoa don", true, LocalIP.getLocalIP(), lyDoHuy);
             }
         }
     }//GEN-LAST:event_btnHuyActionPerformed

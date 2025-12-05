@@ -7,7 +7,9 @@ package view;
 import entity.NhanVien;
 import dao.NhanVienDAO;
 import handlers.GlobalLogHandler;
+import services.ActivityLogService;
 import utils.Auth;
+import utils.LocalIP;
 import utils.MsgBox;
 
 /**
@@ -29,23 +31,29 @@ public class DangNhapJFrame extends javax.swing.JFrame {
         String tenDangNhap = txtTenDangNhap.getText();
         String matKhau = new String(txtMatKhau.getPassword());
         
+        ActivityLogService activityLog = new ActivityLogService();
+        
         if(tenDangNhap.isEmpty()){
             MsgBox.alert(this, "Ten dang nhap khong duoc de trong!");
             return;
         } 
         if(matKhau.isEmpty()){
             MsgBox.alert(this, "Mat khau khong duoc de trong!");
+            return;
         }
         
         NhanVien nv = nvDAO.selectByUserName(tenDangNhap);
         if (nv == null) {
+            activityLog.writeActivity(tenDangNhap, "login", false, LocalIP.getLocalIP(), "invalid username");
             MsgBox.alert(this, "Sai ten dang nhap!");
         } else if (!matKhau.equals(nv.getMatKhau())) {
+            activityLog.writeActivity(tenDangNhap, "login", false, LocalIP.getLocalIP(), "invalid password");
             MsgBox.alert(this, "Sai mat khau!");
         } else {
             Auth.user = nv;
             HomeJFrame homeJFrame = new HomeJFrame();
             homeJFrame.setVisible(true);
+            activityLog.writeActivity(tenDangNhap, "login", true, LocalIP.getLocalIP(), "Login success");
             this.dispose();
         }
     }

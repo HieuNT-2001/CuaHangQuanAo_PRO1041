@@ -4,9 +4,17 @@
  */
 package view;
 
+import dao.SanPhamDAO;
+import entity.InventoryAlert;
+import entity.SanPham;
 import handlers.GlobalLogHandler;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
+import services.ActivityLogService;
 import utils.Auth;
+import utils.LocalIP;
 import utils.MsgBox;
 
 /**
@@ -16,6 +24,9 @@ import utils.MsgBox;
 public class HomeJFrame extends javax.swing.JFrame {
 
     private JPanel childPanel;
+    private final ActivityLogService activityLog = new ActivityLogService();
+    private final String username = Auth.user.getTenDangNhap();
+    private final SanPhamDAO spDao = new SanPhamDAO();
 
     /**
      * Creates new form NewJFrame
@@ -24,6 +35,7 @@ public class HomeJFrame extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         showPanel(new ThongKeJPanel());
+        alertInventory();
     }
 
     /**
@@ -46,11 +58,13 @@ public class HomeJFrame extends javax.swing.JFrame {
         btnTK = new javax.swing.JButton();
         btnSignout = new javax.swing.JButton();
         btnChangePass = new javax.swing.JButton();
+        btnTDTK = new javax.swing.JButton();
+        btnLSHD = new javax.swing.JButton();
         panelMain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LALASTORE");
-        setPreferredSize(new java.awt.Dimension(1280, 720));
+        setPreferredSize(new java.awt.Dimension(1366, 768));
 
         panelNavigate.setBackground(new java.awt.Color(0, 204, 255));
 
@@ -150,6 +164,26 @@ public class HomeJFrame extends javax.swing.JFrame {
             }
         });
 
+        btnTDTK.setBackground(new java.awt.Color(0, 204, 255));
+        btnTDTK.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        btnTDTK.setForeground(new java.awt.Color(255, 255, 255));
+        btnTDTK.setText("Theo dõi tồn kho");
+        btnTDTK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTDTKActionPerformed(evt);
+            }
+        });
+
+        btnLSHD.setBackground(new java.awt.Color(0, 204, 255));
+        btnLSHD.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        btnLSHD.setForeground(new java.awt.Color(255, 255, 255));
+        btnLSHD.setText("Lịch sử hoạt động");
+        btnLSHD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLSHDActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelNavigateLayout = new javax.swing.GroupLayout(panelNavigate);
         panelNavigate.setLayout(panelNavigateLayout);
         panelNavigateLayout.setHorizontalGroup(
@@ -164,6 +198,8 @@ public class HomeJFrame extends javax.swing.JFrame {
             .addComponent(btnTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnSignout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnChangePass, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+            .addComponent(btnTDTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnLSHD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelNavigateLayout.setVerticalGroup(
             panelNavigateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,7 +219,11 @@ public class HomeJFrame extends javax.swing.JFrame {
                 .addComponent(btnHD, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTK, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnTDTK, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnLSHD, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addComponent(btnSignout, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnChangePass, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -213,6 +253,7 @@ public class HomeJFrame extends javax.swing.JFrame {
     private void btnNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNVActionPerformed
         // TODO add your handling code here:
         if (Auth.isAdmin()) {
+            activityLog.writeActivity(username, "quan ly nhan vien", true, LocalIP.getLocalIP(), "");
             showPanel(new NhanVienJPanel());
         } else {
             MsgBox.alert(this, "Bạn có không quyền truy cập chức năng này!");
@@ -222,6 +263,7 @@ public class HomeJFrame extends javax.swing.JFrame {
     private void btnSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSPActionPerformed
         // TODO add your handling code here:
         if (Auth.isAdmin()) {
+            activityLog.writeActivity(username, "quan ly san pham", true, LocalIP.getLocalIP(), "");
             showPanel(new SanPhamJPanel());
         } else {
             MsgBox.alert(this, "Bạn có không quyền truy cập chức năng này!");
@@ -231,6 +273,7 @@ public class HomeJFrame extends javax.swing.JFrame {
     private void btnNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNCCActionPerformed
         // TODO add your handling code here
         if (Auth.isAdmin()) {
+            activityLog.writeActivity(username, "quan ly nha cung cap", true, LocalIP.getLocalIP(), "");
             showPanel(new NhaCungCapJPanel());
         } else {
             MsgBox.alert(this, "Bạn có không quyền truy cập chức năng này!");
@@ -240,6 +283,7 @@ public class HomeJFrame extends javax.swing.JFrame {
     private void btnKMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKMActionPerformed
         // TODO add your handling code here:
         if (Auth.isAdmin()) {
+            activityLog.writeActivity(username, "quan ly khuyen mai", true, LocalIP.getLocalIP(), "");
             showPanel(new PanelKM());
         } else {
             MsgBox.alert(this, "Bạn có không quyền truy cập chức năng này!");
@@ -248,35 +292,78 @@ public class HomeJFrame extends javax.swing.JFrame {
 
     private void btnBHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBHActionPerformed
         // TODO add your handling code here:
+        activityLog.writeActivity(username, "ban hang", true, LocalIP.getLocalIP(), "");
         showPanel(new BanHangJPanel());
     }//GEN-LAST:event_btnBHActionPerformed
 
     private void btnHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHDActionPerformed
         // TODO add your handling code here:
+        activityLog.writeActivity(username, "hoa don", true, LocalIP.getLocalIP(), "");
         showPanel(new HoaDonJPanel());
     }//GEN-LAST:event_btnHDActionPerformed
 
     private void btnTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTKActionPerformed
         // TODO add your handling code here:
+        activityLog.writeActivity(username, "thong ke", true, LocalIP.getLocalIP(), "");
         showPanel(new ThongKeJPanel());
     }//GEN-LAST:event_btnTKActionPerformed
 
     private void btnSignoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignoutActionPerformed
         // TODO add your handling code here:
+        activityLog.writeActivity(username, "logout", true, LocalIP.getLocalIP(), "logout success");
         new DangNhapJFrame().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnSignoutActionPerformed
 
     private void btnChangePassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePassActionPerformed
         // TODO add your handling code here:
+        activityLog.writeActivity(username, "change password", true, LocalIP.getLocalIP(), "change password processing");
         showPanel(new DoiMatKhauJPanel());
     }//GEN-LAST:event_btnChangePassActionPerformed
+
+    private void btnTDTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTDTKActionPerformed
+        // TODO add your handling code here:
+        activityLog.writeActivity(username, "Theo doi ton kho", true, LocalIP.getLocalIP(), "");
+        InventoryHistoryFrame frame = new InventoryHistoryFrame();
+        frame.setVisible(true);
+    }//GEN-LAST:event_btnTDTKActionPerformed
+
+    private void btnLSHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLSHDActionPerformed
+        // TODO add your handling code here:
+        activityLog.writeActivity(username, "Lich su hoat dong", true, LocalIP.getLocalIP(), "");
+        ActivityHistoryFrame frame = new ActivityHistoryFrame();
+        frame.setVisible(true);
+    }//GEN-LAST:event_btnLSHDActionPerformed
 
     private void showPanel(JPanel panel) {
         childPanel = panel;
         panelMain.removeAll();
         panelMain.add(childPanel);
         panelMain.validate();
+    }
+
+    private void alertInventory() {
+        List<InventoryAlert> alerts = new ArrayList<>();
+        List<SanPham> products = spDao.select();
+        
+        for (SanPham product : products) {
+            int stock = product.getSoLuong();
+            if (stock < 10) {
+                InventoryAlert alert = new InventoryAlert(
+                        product.getMaSP(),
+                        product.getTenSP(),
+                        stock,
+                        "Hàng tồn kho thấp",
+                        LocalDateTime.now()
+                );
+                alerts.add(alert);
+            }
+        }
+        
+        if (!alerts.isEmpty()) {
+                LowStockAlertDialog dialog = new LowStockAlertDialog(null, alerts);
+                dialog.setVisible(true);
+            }
     }
 
     /**
@@ -336,10 +423,12 @@ public class HomeJFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnChangePass;
     private javax.swing.JButton btnHD;
     private javax.swing.JButton btnKM;
+    private javax.swing.JButton btnLSHD;
     private javax.swing.JButton btnNCC;
     private javax.swing.JButton btnNV;
     private javax.swing.JButton btnSP;
     private javax.swing.JButton btnSignout;
+    private javax.swing.JButton btnTDTK;
     private javax.swing.JButton btnTK;
     private javax.swing.JLabel lbTitle;
     private javax.swing.JPanel panelMain;

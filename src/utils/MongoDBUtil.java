@@ -14,4 +14,11 @@ public class MongoDBUtil {
         }
         return client.getDatabase("app_logs_db");
     }
+    
+     public static MongoClient getClient() {
+        if (client == null) {
+            client = MongoClients.create("mongodb://localhost:27017");
+        }
+        return client;
+    }
 }
