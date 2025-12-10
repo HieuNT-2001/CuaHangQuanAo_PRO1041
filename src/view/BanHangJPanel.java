@@ -13,6 +13,7 @@ import dao.SanPhamDAO;
 import entity.HoaDon;
 import entity.HoaDonChiTiet;
 import entity.InventoryAlert;
+import entity.InventoryChange;
 import entity.KhuyenMai;
 import entity.SanPham;
 import java.awt.event.KeyEvent;
@@ -214,7 +215,7 @@ public class BanHangJPanel extends javax.swing.JPanel {
                 int newStock = oldStock - quantitySold;
 
                 // Ghi vào MongoDB
-                inventoryChangeService.logChange(
+                InventoryChange change = new InventoryChange(
                         sp.getMaSP(),
                         sp.getTenSP(),
                         -quantitySold,
@@ -222,6 +223,7 @@ public class BanHangJPanel extends javax.swing.JPanel {
                         newStock,
                         "Bán hàng (HĐ #" + hd.getMaHD() + ")",
                         username);
+                inventoryChangeService.logChange(change);
 
                 // KIỂM TRA CẢNH BÁO STOCK THẤP
                 if (newStock < 10) {

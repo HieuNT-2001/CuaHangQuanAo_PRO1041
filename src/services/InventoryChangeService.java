@@ -7,6 +7,9 @@ package services;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import entity.InventoryChange;
+
+import java.time.format.DateTimeFormatter;
+
 import org.bson.Document;
 import utils.MongoDBUtil;
 
@@ -23,26 +26,19 @@ public class InventoryChangeService {
         this.collection = db.getCollection("inventory_changes");
     }
 
-    public void logChange(
-            int productId,
-            String productName,
-            int changeAmount,
-            int oldStock,
-            int newStock,
-            String reason,
-            String username
-    ) {
-        InventoryChange log = new InventoryChange(
-                productId,
-                productName,
-                changeAmount,
-                oldStock,
-                newStock,
-                reason,
-                username
-        );
+    public void logChange(InventoryChange change) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        Document doc = new Document()
+                .append("productId", change.getProductId())
+                .append("productName", change.getProductName())
+                .append("changeAmount", change.getChangeAmount())
+                .append("oldStock", change.getOldStock())
+                .append("newStock", change.getNewStock())
+                .append("reason", change.getReason())
+                .append("username", change.getUsername())
+                .append("timestamp", change.getTimestamp().format(formatter));
 
-        collection.insertOne(log.toDocument());
+        collection.insertOne(doc);
     }
 
 }

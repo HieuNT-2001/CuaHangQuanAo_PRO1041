@@ -5,7 +5,6 @@
 package entity;
 
 import java.time.LocalDateTime;
-import org.bson.Document;
 
 /**
  *
@@ -16,7 +15,7 @@ public class InventoryChange {
     private int productId;
     private String productName;
 
-    private int changeAmount;     // +10 nhập hàng, -2 bán hàng…
+    private int changeAmount; // +10 nhập hàng, -2 bán hàng…
     private int oldStock;
     private int newStock;
 
@@ -24,8 +23,9 @@ public class InventoryChange {
     private String username;
 
     private LocalDateTime timestamp;
-    
-    public InventoryChange() {}
+
+    public InventoryChange() {
+    }
 
     public InventoryChange(
             int productId,
@@ -34,8 +34,7 @@ public class InventoryChange {
             int oldStock,
             int newStock,
             String reason,
-            String username
-    ) {
+            String username) {
         this.productId = productId;
         this.productName = productName;
         this.changeAmount = changeAmount;
@@ -46,15 +45,68 @@ public class InventoryChange {
         this.timestamp = LocalDateTime.now();
     }
 
-    public Document toDocument() {
-        return new Document()
-                .append("productId", productId)
-                .append("productName", productName)
-                .append("changeAmount", changeAmount)
-                .append("oldStock", oldStock)
-                .append("newStock", newStock)
-                .append("reason", reason)
-                .append("username", username)
-                .append("timestamp", timestamp.toString());
+    public int getProductId() {
+        return productId;
     }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public int getChangeAmount() {
+        return changeAmount;
+    }
+
+    public void setChangeAmount(int changeAmount) {
+        this.changeAmount = changeAmount;
+    }
+
+    public int getOldStock() {
+        return oldStock;
+    }
+
+    public void setOldStock(int oldStock) {
+        this.oldStock = oldStock;
+    }
+
+    public int getNewStock() {
+        return newStock;
+    }
+
+    public void setNewStock(int newStock) {
+        this.newStock = newStock;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }
